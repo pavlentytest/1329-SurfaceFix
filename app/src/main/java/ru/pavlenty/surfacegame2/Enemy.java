@@ -1,0 +1,77 @@
+package ru.pavlenty.surfacegame2;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.util.Log;
+
+import java.util.Random;
+
+public class Enemy {
+    private Bitmap bitmap;
+    private int x;
+    private int y;
+    private int speed = 0;
+
+    private int maxX;
+    private int maxY;
+
+    private int minX;
+    private int minY;
+
+    private Rect detectCollision;
+
+
+    public Enemy(Context context, int screenX, int screenY) {
+        Log.d("RRR screenX",Integer.toString(screenX));
+
+        this.bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy);
+        this.maxX = screenX;
+        this.maxY = screenY;
+        this.minX = 0;
+        this.minY = 0;
+        Random r = new Random();
+        speed = r.nextInt(6);
+        x = screenX;
+        y = r.nextInt(this.maxY);
+        detectCollision =  new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+    }
+
+    public void update(int playerSpeed) {
+        x -= playerSpeed;
+        x -= speed;
+
+        if(x < minX) {
+            Random gen = new Random();
+            speed = gen.nextInt(10) + 10;
+            x = maxX;
+            y = gen.nextInt(maxY);
+        }
+        detectCollision.left = x;
+        detectCollision.top = y;
+        detectCollision.right = x + bitmap.getWidth();
+        detectCollision.bottom = y + bitmap.getHeight();
+
+    }
+
+    public Rect getDetectCollision() {
+        return detectCollision;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+}

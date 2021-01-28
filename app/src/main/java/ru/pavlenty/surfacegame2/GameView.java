@@ -20,12 +20,16 @@ public class GameView extends SurfaceView implements Runnable {
     private Thread gameThread = null;
     private Player player;
     private Friend friend;
+    private Enemy enemy;
+
+    private Boom boom;
 
     private Paint paint;
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
 
     private ArrayList<Star> stars = new ArrayList<Star>();
+
 
     int screenX;
     int countMisses;
@@ -59,6 +63,8 @@ public class GameView extends SurfaceView implements Runnable {
 
         // добавляем новый объект - Friend
         friend = new Friend(context, screenX, screenY);
+        enemy = new Enemy(context, screenX, screenY);
+        boom = new Boom(context);
 
         this.screenX = screenX;
         countMisses = 0;
@@ -143,6 +149,20 @@ public class GameView extends SurfaceView implements Runnable {
                     friend.getY(),
                     paint);
 
+            // отрисовка Enemy
+            canvas.drawBitmap(
+                    enemy.getBitmap(),
+                    enemy.getX(),
+                    enemy.getY(),
+                    paint);
+
+
+            canvas.drawBitmap(
+                    boom.getBitmap(),
+                    boom.getX(),
+                    boom.getY(),
+                    paint);
+
             if(isGameOver){
                 paint.setTextSize(150);
                 paint.setTextAlign(Paint.Align.CENTER);
@@ -166,11 +186,26 @@ public class GameView extends SurfaceView implements Runnable {
 
         player.update();
 
+        boom.setX(-250);
+        boom.setY(-250);
+
         // обновление у Friend
         friend.update(player.getSpeed());
 
         for (Star s : stars) {
             s.update(player.getSpeed());
+        }
+
+        // обновление у Enemy
+        enemy.update(enemy.getSpeed());
+
+        if (Rect.intersects(player.getDetectCollision(),enemy.getDetectCollision())) {
+            killedEnemysound.start();
+            int x = enemy.getX();
+            int y = enemy.getY();
+            boom.setX(x);
+            boom.setY(y);
+
         }
     }
 
